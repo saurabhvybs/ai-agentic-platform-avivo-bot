@@ -1,0 +1,29 @@
+services:
+  ingest:
+    build: .
+    command: python scripts/ingest.py
+    env_file: .env
+    volumes:
+      - ./.db:/app/.db
+      - ./data:/app/data
+    profiles: ["ingest"]
+
+  bot:
+    build: .
+    env_file: .env
+    volumes:
+      - ./.db:/app/.db
+      # data/ NOT mounted — bot never reads .md files at runtime; all KB data is in SQLite
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:0.6.5
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    profiles: ["ollama"]
+    # When USE_OLLAMA=true inside Docker, set OLLAMA_BASE_URL=http://ollama:11434
+
+volumes:
+  ollama_data:
