@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     CHUNK_SIZE: int = 400
     CHUNK_OVERLAP: int = 50
     TOP_K: int = 3
-    MAX_HISTORY: int = 3
+    MAX_HISTORY: int = 10
 
     # Web search
     TAVILY_API_KEY: str | None = None

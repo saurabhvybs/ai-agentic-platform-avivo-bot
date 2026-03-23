@@ -17,6 +17,11 @@ def _get_model(model_name: str = "all-MiniLM-L6-v2") -> SentenceTransformer:
         with _model_lock:
             if _model is None:  # double-checked locking
                 _model = SentenceTransformer(model_name)
+                _model._loaded_name = model_name  # type: ignore[attr-defined]
+    assert getattr(_model, "_loaded_name", None) == model_name, (
+        f"Embedder singleton was loaded with '{_model._loaded_name}' "  # type: ignore[attr-defined]
+        f"but caller requested '{model_name}'. Restart to change embedding model."
+    )
     return _model
 
 

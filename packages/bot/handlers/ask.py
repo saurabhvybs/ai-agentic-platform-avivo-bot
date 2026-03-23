@@ -35,7 +35,9 @@ def _format_reply(result) -> str:
         web_parts = []
         for r in result.web_references:
             title = escape_markdown(r.get('title', 'Link'), version=2)
-            url = escape_markdown(r['url'], version=2)
+            # URLs must NOT be fully escaped in MarkdownV2 inline links —
+            # only ) and \ need escaping inside the URL portion.
+            url = r['url'].replace('\\', '\\\\').replace(')', '\\)')
             web_parts.append(f"[{title}]({url})")
         links = ", ".join(web_parts)
         lines.append(f"\n\U0001f310 *Web:* {links}")
@@ -51,7 +53,7 @@ async def ask_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     query = " ".join(context.args) if context.args else ""
     if not query.strip():
         await update.message.reply_text(
-            "Please provide a query: `/ask what is the leave policy?`",
+            "Please provide a query: `/ask what is the leave policy\\?`",
             parse_mode="MarkdownV2",
         )
         return
@@ -63,7 +65,7 @@ async def ask_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         # Cached results are not added to conversation history to avoid
         # duplicate entries when the same query is repeated.
         await update.message.reply_text(
-            _format_reply(cached) + "\n\n\u26a1 _(cached)_", parse_mode="MarkdownV2"
+            _format_reply(cached) + "\n\n\u26a1 _\\(cached\\)_", parse_mode="MarkdownV2"
         )
         return
 

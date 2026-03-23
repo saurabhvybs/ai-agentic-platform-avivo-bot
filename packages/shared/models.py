@@ -23,8 +23,3 @@ class VisionResult(BaseModel):
     tags: list[str]
 
 
-class ChunkModel(BaseModel):
-    doc_name: str
-    chunk_index: int
-    text: str
-    embedding: list[float]       # 384-dim
